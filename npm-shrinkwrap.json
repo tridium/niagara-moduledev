@@ -1,0 +1,25 @@
+{
+  "name": "niagara-moduledev",
+  "version": "0.1.2",
+  "dependencies": {
+    "adm-zip": {
+      "version": "0.4.4",
+      "from": "adm-zip@~0.4.4"
+    },
+    "properties": {
+      "version": "1.2.1",
+      "from": "properties@~1.2.1"
+    },
+    "temporary": {
+      "version": "0.0.8",
+      "from": "temporary@0.0.8",
+      "resolved": "https://registry.npmjs.org/temporary/-/temporary-0.0.8.tgz",
+      "dependencies": {
+        "package": {
+          "version": "1.0.1",
+          "from": "package@>= 1.0.0 < 1.2.0"
+        }
+      }
+    }
+  }
+}

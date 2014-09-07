@@ -1,0 +1,34 @@
+{
+  "name": "niagara-moduledev",
+  "version": "0.1.2",
+  "description": "moduledev.properties support for node",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tridium/niagara-moduledev.git"
+  },
+  "bugs": {
+    "email": "lbyam@tridium.com"
+  },
+  "author": {
+    "name": "Logan Byam",
+    "email": "lbyam@tridium.com"
+  },
+  "main": "lib/moduledev",
+  "scripts": {
+    "test": "jasmine-node spec"
+  },
+  "dependencies": {
+    "properties": "~1.2.1",
+    "temporary": "0.0.8",
+    "adm-zip": "~0.4.4"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-jasmine-node": "~0.2.1",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-contrib-jshint": "~0.10.0",
+    "jshint-junit-reporter": "0.0.6",
+    "grunt-jsdoc": "~0.5.4",
+    "ink-docstrap": "~0.3.0-0"
+  }
+}
