@@ -16,6 +16,7 @@ module.exports = function runGrunt(grunt) {
         unused: true,
 
         globals: {
+          afterEach: false,
           beforeEach: false,
           describe: false,
           expect: false,
@@ -29,17 +30,17 @@ module.exports = function runGrunt(grunt) {
       };
 
   grunt.initConfig({
-    jasmine_node: {
+    jasmine_nodejs: {
       options: {
-        forceExit: false,
-        jUnit: {
-          report: false,
-          savePath: './build/reports/jasmine',
-          useDotNotation: true,
-          consolidate: true
+        reporters: {
+          console: {
+            colors: true
+          }
         }
       },
-      all: ['spec/']
+      all: {
+        specs: [ 'spec/**/*.js' ]
+      }
     },
     jsdoc: {
       dist: {
@@ -58,12 +59,12 @@ module.exports = function runGrunt(grunt) {
     },
     watch: {
       files: ALL_FILES,
-      tasks: ['jshint', 'jasmine_node']
+      tasks: ['jshint', 'jasmine_nodejs']
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-jasmine-node');
+  grunt.loadNpmTasks('grunt-jasmine-nodejs');
   grunt.loadNpmTasks('grunt-jsdoc');
 };

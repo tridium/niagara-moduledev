@@ -3,7 +3,8 @@
 var moduledev = require('../lib/moduledev'),
     ModuleDev = moduledev.ModuleDev,
     properties = require('properties'),
-    fs = require('fs');
+    fs = require('fs'),
+    path = require('path');
 
 
 function matchPath(md, path, expected, cb) {
@@ -22,6 +23,29 @@ describe("niagara-moduledev", function () {
         mobile: 'd:/niagara/r40/niagara_dev_home/util/mobile'
       },
       testPropsString = properties.stringify(testProps);
+      
+  describe(".getDefaultFilePath()", function () {
+    it("returns $niagara_home/etc/moduledev.properties", function () {
+      var niagara_home = "/opt/niagara/whatever/",
+          filename = niagara_home + "etc/moduledev.properties";
+      process.env.niagara_home = niagara_home;
+      expect(moduledev.getDefaultFilePath())
+        .toBe(filename.replace(/\//g, path.sep));
+    });
+    
+    it("uses passed niagaraHome if given", function () {
+      var niagara_home = "/opt/niagara/whatever/",
+          filename = niagara_home + "etc/moduledev.properties";
+      process.env.niagara_home = "asdf";
+      expect(moduledev.getDefaultFilePath({ niagaraHome: niagara_home }))
+        .toBe(filename.replace(/\//g, path.sep));
+    });
+    
+    it("returns null if niagara_home is not defined", function () {
+      delete process.env.niagara_home;
+      expect(moduledev.getDefaultFilePath()).toBe(null);
+    });
+  });
 
   describe(".fromRawString()", function () {
     it("reads and parses a raw properties string", function (done) {
@@ -40,14 +64,38 @@ describe("niagara-moduledev", function () {
   });
 
   describe(".fromFile()", function () {
+    function verifyContents(md, cb) {
+      matchPath(md, "/module/bajaScript/rc", testProps.bajaScript + "/src/rc",
+        cb);
+    }
+    
+    beforeEach(function () {
+      if (!fs.existsSync("etc")) { fs.mkdirSync("etc"); }
+    });
+    
+    afterEach(function () {
+      if (fs.existsSync("etc")) { fs.rmdirSync("etc"); }
+    });
+    
     it("reads and parses a properties file", function (done) {
       fs.writeFileSync(testFileName, testPropsString);
       moduledev.fromFile(testFileName, function (err, md) {
-        matchPath(md, "/module/bajaScript/rc",
-          testProps.bajaScript + "/src/rc", function () {
-            fs.unlinkSync(testFileName);
-            done();
-          });
+        verifyContents(md, function () {
+          fs.unlinkSync(testFileName);
+          done();
+        });
+      });
+    });
+    
+    it("looks in niagara_home/etc/moduledev.properties by default", function (done) {
+      var filePath = path.join(".", "etc", "moduledev.properties");
+     fs.writeFileSync(filePath, testPropsString);
+      process.env.niagara_home = ".";
+      moduledev.fromFile(function (err, md) {
+        verifyContents(md, function () {
+          fs.unlinkSync(filePath);
+          done();
+        });
       });
     });
 
@@ -69,7 +117,7 @@ describe("niagara-moduledev", function () {
   });
 
   describe(".ModuleDev", function () {
-    describe("#getFilePath", function () {
+    describe("#getFilePath()", function () {
       describe("for modules in moduledev.properties", function () {
         var md;
 
@@ -144,6 +192,21 @@ describe("niagara-moduledev", function () {
           verifyFileGeneration(md, "module://testModule/rc/foo.js",
             'module.exports = "i am a foo";', done);
         });
+        
+        it("pulls a file from ux runtime profile", function (done) {
+          verifyFileGeneration(md, "module://testModule/rc/ux-only.js",
+            'module.exports = "i am ux only";', done);
+        });
+        
+        it("pulls a file from rt runtime profile", function (done) {
+          verifyFileGeneration(md, "module://testModule/rc/rt-only.js",
+            'module.exports = "i am rt only";', done);
+        });
+        
+        it("pulls a file from a module with no runtime profile", function (done) {
+          verifyFileGeneration(md, "module://testModule/rc/no-profile.js",
+            'module.exports = "i have no profile";', done);
+        });
 
         it("pulls a /module/ URI from a module in NIAGARA_HOME", function (done) {
           verifyFileGeneration(md, "/module/testModule/rc/boo.js",
@@ -161,6 +224,10 @@ describe("niagara-moduledev", function () {
                   'module.exports = "i am a boo";', done);
               });
           });
+        });
+        
+        it("calls back error if file not in module", function (done) {
+          verifyError(md, "module://testModule/rc/nonexistent.js", done);
         });
 
         it("calls back error if module:// module not found", function (done) {

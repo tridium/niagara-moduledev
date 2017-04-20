@@ -18,17 +18,18 @@
     "test": "jasmine-node spec"
   },
   "dependencies": {
-    "properties": "~1.2.1",
+    "properties": "^1.2.1",
     "temporary": "0.0.8",
-    "adm-zip": "~0.4.4"
+    "adm-zip": "^0.4.7"
   },
   "devDependencies": {
-    "grunt": "~0.4.4",
-    "grunt-jasmine-node": "~0.2.1",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-jshint": "~0.10.0",
-    "jshint-junit-reporter": "0.0.6",
-    "grunt-jsdoc": "~0.5.4",
-    "ink-docstrap": "~0.3.0-0"
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-jasmine-node": "^0.3.1",
+    "grunt-jasmine-nodejs": "^1.6.0",
+    "grunt-jsdoc": "^2.1.0",
+    "ink-docstrap": "^1.3.0",
+    "jshint-junit-reporter": "^0.2.2"
   }
 }
