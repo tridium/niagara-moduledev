@@ -7,8 +7,11 @@ var moduledev = require('../lib/moduledev'),
     path = require('path');
 
 
-function matchPath(md, path, expected, cb) {
-  md.getFilePath(path, function (err, result) {
+function matchPath(md, filePath, expected, cb) {
+  md.getFilePath(filePath, function (err, result) {
+    if (typeof expected === 'string') {
+      expected = expected.replace(/\//g, path.sep);
+    }
     expect(result).toBe(expected);
     cb();
   });
@@ -18,11 +21,15 @@ function matchPath(md, path, expected, cb) {
 describe("niagara-moduledev", function () {
   var testFileName = "test-moduledev.properties",
       testProps = {
-        bajaScript: 'd:/niagara/r40/niagara_dev_home/fw/bajaScript',
-        bajaux: 'd:/niagara/r40/niagara_dev_home/fw/bajaux',
-        mobile: 'd:/niagara/r40/niagara_dev_home/util/mobile'
+        bajaScript: 'spec/niagaraDevHome/bajaScript',
+        bajaux: 'spec/niagaraDevHome/bajaux',
+        mobile: 'spec/niagaraDevHome/mobile'
       },
       testPropsString = properties.stringify(testProps);
+  
+  beforeEach(function () {
+    process.env.niagara_home = ".";
+  });
       
   describe(".getDefaultFilePath()", function () {
     it("returns $niagara_home/etc/moduledev.properties", function () {
@@ -50,8 +57,8 @@ describe("niagara-moduledev", function () {
   describe(".fromRawString()", function () {
     it("reads and parses a raw properties string", function (done) {
       moduledev.fromRawString(testPropsString, function (err, md) {
-        matchPath(md, "/module/bajaScript/rc",
-          testProps.bajaScript + "/src/rc", done);
+        matchPath(md, "/module/bajaScript/rc/bajaScript-rt.js",
+          testProps.bajaScript + "/bajaScript-rt/src/rc/bajaScript-rt.js", done);
       });
     });
 
@@ -65,7 +72,8 @@ describe("niagara-moduledev", function () {
 
   describe(".fromFile()", function () {
     function verifyContents(md, cb) {
-      matchPath(md, "/module/bajaScript/rc", testProps.bajaScript + "/src/rc",
+      matchPath(md, "/module/bajaScript/rc/bajaScript-rt.js",
+        testProps.bajaScript + "/bajaScript-rt/src/rc/bajaScript-rt.js",
         cb);
     }
     
@@ -84,6 +92,14 @@ describe("niagara-moduledev", function () {
           fs.unlinkSync(testFileName);
           done();
         });
+      });
+    });
+    
+    it("calls back error if niagara_home not present or given", function (done) {
+      delete process.env.niagara_home;
+      moduledev.fromFile(testFileName, function (err) {
+        expect(err).toEqual(jasmine.any(Error));
+        done();
       });
     });
     
@@ -128,24 +144,14 @@ describe("niagara-moduledev", function () {
           });
         });
 
-        it("maps a module://moduleName ORD to a file in /src", function (done) {
-          matchPath(md, "module://bajaux/rc/foo",
-            testProps.bajaux + "/src/rc/foo", done);
+        it("maps a module://moduleName ORD to a -ux module dir", function (done) {
+          matchPath(md, "module://bajaScript/rc/bajaScript-ux.js",
+            testProps.bajaScript + "/bajaScript-ux/src/rc/bajaScript-ux.js", done);
         });
 
         it("maps a module://moduleNameTest ORD to a file in /srcTest", function (done) {
-          matchPath(md, "module://bajauxTest/rc/boo",
-            testProps.bajaux + "/srcTest/rc/boo", done);
-        });
-
-        it("maps a /module/moduleName URI to a file in /src", function (done) {
-          matchPath(md, "/module/mobile/rc/doo",
-            testProps.mobile + "/src/rc/doo", done);
-        });
-
-        it("maps a /module/moduleNameTest URI to a file in /srcTest", function (done) {
-          matchPath(md, "/module/mobileTest/rc/goo",
-            testProps.mobile + "/srcTest/rc/goo", done);
+          matchPath(md, "module://bajaScriptTest/rc/bajaScript-ux-spec.js",
+            testProps.bajaScript + "/bajaScript-ux/srcTest/rc/bajaScript-ux-spec.js", done);
         });
 
         it("calls back undefined if the ORD is malformed", function (done) {

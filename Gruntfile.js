@@ -21,6 +21,7 @@ module.exports = function runGrunt(grunt) {
           describe: false,
           expect: false,
           it: false,
+          fit: false,
           jasmine: false,
           runs: false,
           waitsFor: false,
