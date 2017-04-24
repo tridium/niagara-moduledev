@@ -245,5 +245,66 @@ describe("niagara-moduledev", function () {
         });
       });
     });
+    
+    describe(".getRequireJsPaths()", function () {
+      var niagaraHome = 'spec/niagaraHome',
+          md;
+
+      beforeEach(function (done) {
+        moduledev.fromRawString(testPropsString, {
+          niagaraHome: niagaraHome
+        }, function (err, m) {
+          md = m;
+          done();
+        });
+      });
+      
+      it("maps RequireJS IDs to file paths", function (done) {
+        md.getRequireJsPaths({
+          "bajaScript-rt": "nmodule/bajaScript/rc/bajaScript-rt",
+          "foo": "nmodule/testModule/rc/foo"
+        }, function (err, paths) {
+          expect(String(fs.readFileSync(paths["bajaScript-rt"] + '.js')))
+            .toBe('module.exports = "i am bajaScript-rt";');
+          expect(String(fs.readFileSync(paths.foo + '.js')))
+            .toBe('module.exports = "i am a foo";');
+          done();
+        });
+      });
+      
+      it("respects an array for fallback behavior", function (done) {
+        md.getRequireJsPaths({
+          "bajaScript-rt": [
+            "nmodule/bajaScript/rc/asdf.nope",
+            "nmodule/bajaScript/rc/bajaScript-rt"
+          ]
+        }, function (err, paths) {
+          expect(String(fs.readFileSync(paths["bajaScript-rt"] + '.js')))
+            .toBe('module.exports = "i am bajaScript-rt";');
+          done();
+        });
+      });
+      
+      it("calls back with error if file path not found", function (done) {
+        md.getRequireJsPaths({
+          "bajaScript-rt": "nmodule/bajaScript/rc/asdf.nope"
+        }, function (err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+
+      it("calls back with error if file path in array not found", function (done) {
+        md.getRequireJsPaths({
+          "bajaScript-rt": [
+            "nmodule/bajaScript/rc/asdf.nope",
+            "nmodule/bajaScript/rc/asdf.stillnope"
+          ]
+        }, function (err) {
+          expect(err).toEqual(jasmine.any(Error));
+          done();
+        });
+      });
+    });
   });
 });

@@ -12,6 +12,11 @@
       "from": "package@>=1.0.0 <1.2.0",
       "resolved": "https://registry.npmjs.org/package/-/package-1.0.1.tgz"
     },
+    "promise-breaker": {
+      "version": "4.0.3",
+      "from": "promise-breaker@latest",
+      "resolved": "https://registry.npmjs.org/promise-breaker/-/promise-breaker-4.0.3.tgz"
+    },
     "properties": {
       "version": "1.2.1",
       "from": "properties@>=1.2.1 <2.0.0",
