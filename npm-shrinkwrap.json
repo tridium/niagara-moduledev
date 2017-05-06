@@ -1,31 +1,31 @@
 {
   "name": "niagara-moduledev",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "dependencies": {
     "adm-zip": {
       "version": "0.4.7",
       "from": "adm-zip@>=0.4.7 <0.5.0",
       "resolved": "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.7.tgz"
     },
-    "package": {
-      "version": "1.0.1",
-      "from": "package@>=1.0.0 <1.2.0",
-      "resolved": "https://registry.npmjs.org/package/-/package-1.0.1.tgz"
-    },
-    "promise-breaker": {
-      "version": "4.0.3",
-      "from": "promise-breaker@latest",
-      "resolved": "https://registry.npmjs.org/promise-breaker/-/promise-breaker-4.0.3.tgz"
+    "os-tmpdir": {
+      "version": "1.0.2",
+      "from": "os-tmpdir@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz"
     },
     "properties": {
       "version": "1.2.1",
       "from": "properties@>=1.2.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/properties/-/properties-1.2.1.tgz"
     },
-    "temporary": {
-      "version": "0.0.8",
-      "from": "temporary@0.0.8",
-      "resolved": "https://registry.npmjs.org/temporary/-/temporary-0.0.8.tgz"
+    "rimraf": {
+      "version": "2.2.8",
+      "from": "rimraf@>=2.2.8 <2.3.0",
+      "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.2.8.tgz"
+    },
+    "temp": {
+      "version": "0.8.3",
+      "from": "temp@latest",
+      "resolved": "https://registry.npmjs.org/temp/-/temp-0.8.3.tgz"
     }
   }
 }
