@@ -6,6 +6,7 @@ module.exports = function runGrunt(grunt) {
       JSHINT_OPTIONS = {
         curly: true,
         eqeqeq: true,
+        esversion: 6,
         forin: true,
         immed: true,
         latedef: true,
@@ -26,7 +27,9 @@ module.exports = function runGrunt(grunt) {
           runs: false,
           waitsFor: false,
           xdescribe: false,
-          xit: false
+          xit: false,
+          
+          Promise: false
         }
       };
 

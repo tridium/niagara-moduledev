@@ -1,10 +1,10 @@
 'use strict';
 
-var moduledev = require('../lib/moduledev'),
-    ModuleDev = moduledev.ModuleDev,
-    properties = require('properties'),
-    fs = require('fs'),
-    path = require('path');
+const moduledev = require('../lib/moduledev'),
+      ModuleDev = moduledev.ModuleDev,
+      properties = require('properties'),
+      fs = require('fs'),
+      path = require('path');
 
 
 function matchPath(md, filePath, expected, cb) {
@@ -19,13 +19,13 @@ function matchPath(md, filePath, expected, cb) {
 
 
 describe("niagara-moduledev", function () {
-  var testFileName = "test-moduledev.properties",
-      testProps = {
-        bajaScript: 'spec/niagaraDevHome/bajaScript',
-        bajaux: 'spec/niagaraDevHome/bajaux',
-        mobile: 'spec/niagaraDevHome/mobile'
-      },
-      testPropsString = properties.stringify(testProps);
+  const testFileName = "test-moduledev.properties",
+        testProps = {
+          bajaScript: 'spec/niagaraDevHome/bajaScript',
+          bajaux: 'spec/niagaraDevHome/bajaux',
+          mobile: 'spec/niagaraDevHome/mobile'
+        },
+        testPropsString = properties.stringify(testProps);
   
   beforeEach(function () {
     process.env.niagara_home = ".";
@@ -33,16 +33,16 @@ describe("niagara-moduledev", function () {
       
   describe(".getDefaultFilePath()", function () {
     it("returns $niagara_home/etc/moduledev.properties", function () {
-      var niagara_home = "/opt/niagara/whatever/",
-          filename = niagara_home + "etc/moduledev.properties";
+      const niagara_home = "/opt/niagara/whatever/",
+            filename = niagara_home + "etc/moduledev.properties";
       process.env.niagara_home = niagara_home;
       expect(moduledev.getDefaultFilePath())
         .toBe(filename.replace(/\//g, path.sep));
     });
     
     it("uses passed niagaraHome if given", function () {
-      var niagara_home = "/opt/niagara/whatever/",
-          filename = niagara_home + "etc/moduledev.properties";
+      const niagara_home = "/opt/niagara/whatever/",
+            filename = niagara_home + "etc/moduledev.properties";
       process.env.niagara_home = "asdf";
       expect(moduledev.getDefaultFilePath({ niagaraHome: niagara_home }))
         .toBe(filename.replace(/\//g, path.sep));
@@ -104,8 +104,8 @@ describe("niagara-moduledev", function () {
     });
     
     it("looks in niagara_home/etc/moduledev.properties by default", function (done) {
-      var filePath = path.join(".", "etc", "moduledev.properties");
-     fs.writeFileSync(filePath, testPropsString);
+      const filePath = path.join(".", "etc", "moduledev.properties");
+      fs.writeFileSync(filePath, testPropsString);
       process.env.niagara_home = ".";
       moduledev.fromFile(function (err, md) {
         verifyContents(md, function () {
@@ -135,7 +135,7 @@ describe("niagara-moduledev", function () {
   describe(".ModuleDev", function () {
     describe("#getFilePath()", function () {
       describe("for modules in moduledev.properties", function () {
-        var md;
+        let md;
 
         beforeEach(function (done) {
           moduledev.fromRawString(testPropsString, function (err, m) {
@@ -164,7 +164,7 @@ describe("niagara-moduledev", function () {
       });
 
       describe("for modules not in moduledev.properties", function () {
-        var niagaraHome = 'spec/niagaraHome',
+        let niagaraHome = 'spec/niagaraHome',
             md;
 
         beforeEach(function (done) {
@@ -247,7 +247,7 @@ describe("niagara-moduledev", function () {
     });
     
     describe(".getRequireJsPaths()", function () {
-      var niagaraHome = 'spec/niagaraHome',
+      let niagaraHome = 'spec/niagaraHome',
           md;
 
       beforeEach(function (done) {
