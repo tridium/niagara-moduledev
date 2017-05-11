@@ -305,6 +305,20 @@ describe("niagara-moduledev", function () {
           done();
         });
       });
+      
+      it("respects file extensions if present", function (done) {
+        md.getRequireJsPaths({
+          "bajaScript-rt": "nmodule/bajaScript/rc/bajaScript-rt.js",
+          "bajaScript-template": "nmodule/bajaScript/rc/bajaScript-template.hbs"
+        }, function (err, paths) {
+          expect(err).toBeFalsy();
+          expect(String(fs.readFileSync(paths["bajaScript-rt"] + '.js')))
+            .toBe('module.exports = "i am bajaScript-rt";');
+          expect(String(fs.readFileSync(paths["bajaScript-template"] + '.hbs')))
+            .toBe('i am a {{template}}');
+          done();
+        });
+      });
     });
   });
 });
