@@ -1,6 +1,6 @@
 {
   "name": "niagara-moduledev",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "moduledev.properties support for node",
   "repository": {
     "type": "git",
