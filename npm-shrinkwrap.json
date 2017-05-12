@@ -1,11 +1,26 @@
 {
   "name": "niagara-moduledev",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "dependencies": {
     "adm-zip": {
       "version": "0.4.7",
       "from": "adm-zip@>=0.4.7 <0.5.0",
       "resolved": "https://registry.npmjs.org/adm-zip/-/adm-zip-0.4.7.tgz"
+    },
+    "fs-extra": {
+      "version": "3.0.1",
+      "from": "fs-extra@>=3.0.1 <4.0.0",
+      "resolved": "https://nxsrepo.tridium.com/nexus/content/repositories/npmjs/fs-extra/-/fs-extra-3.0.1.tgz"
+    },
+    "graceful-fs": {
+      "version": "4.1.11",
+      "from": "graceful-fs@>=4.1.2 <5.0.0",
+      "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.11.tgz"
+    },
+    "jsonfile": {
+      "version": "3.0.0",
+      "from": "jsonfile@>=3.0.0 <4.0.0",
+      "resolved": "https://nxsrepo.tridium.com/nexus/content/repositories/npmjs/jsonfile/-/jsonfile-3.0.0.tgz"
     },
     "os-tmpdir": {
       "version": "1.0.2",
@@ -19,13 +34,18 @@
     },
     "rimraf": {
       "version": "2.2.8",
-      "from": "rimraf@>=2.2.8 <2.3.0",
+      "from": "rimraf@>=2.2.6 <2.3.0",
       "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.2.8.tgz"
     },
     "temp": {
       "version": "0.8.3",
-      "from": "temp@latest",
+      "from": "temp@>=0.8.3 <0.9.0",
       "resolved": "https://registry.npmjs.org/temp/-/temp-0.8.3.tgz"
+    },
+    "universalify": {
+      "version": "0.1.0",
+      "from": "universalify@>=0.1.0 <0.2.0",
+      "resolved": "https://nxsrepo.tridium.com/nexus/content/repositories/npmjs/universalify/-/universalify-0.1.0.tgz"
     }
   }
 }
