@@ -9,7 +9,7 @@ module.exports = function runGrunt(grunt) {
         esversion: 6,
         forin: true,
         immed: true,
-        latedef: true,
+        latedef: 'nofunc',
         noarg: true,
         node: true,
         strict: true,
@@ -29,7 +29,7 @@ module.exports = function runGrunt(grunt) {
           xdescribe: false,
           xit: false,
           
-          Promise: false
+          Promise: true
         }
       };
 

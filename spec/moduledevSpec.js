@@ -175,48 +175,60 @@ describe("niagara-moduledev", function () {
             done();
           });
         });
-
-        function verifyFileGeneration(md, filePath, expected, done) {
-          md.getFilePath(filePath, function (err, filePath) {
-            expect(err).toBeFalsy();
-            fs.readFile(filePath, function (err, data) {
-              expect(err).toBeFalsy();
-              expect(String(data)).toBe(expected);
-              done();
-            });
-          });
-        }
-
-        function verifyError(md, filePath, done) {
-          md.getFilePath(filePath, function (err) {
-            expect(err).toEqual(jasmine.any(Error));
-            done();
-          });
-        }
-
+        
         it("pulls a module:// file from a module in NIAGARA_HOME", function (done) {
           verifyFileGeneration(md, "module://testModule/rc/foo.js",
-            'module.exports = "i am a foo";', done);
+            'testModule-ux/rc/foo.js', done);
         });
-        
+
         it("pulls a file from ux runtime profile", function (done) {
           verifyFileGeneration(md, "module://testModule/rc/ux-only.js",
-            'module.exports = "i am ux only";', done);
+            'testModule-ux/rc/ux-only.js', done);
+        });
+        
+        it("pulls a directory from ux runtime profile", function (done) {
+          md.getFilePath("module://testModule/rc/ux-dir", function (err, filePath) {
+            expect(err).toBeFalsy();
+            verifyFileContents(path.join(filePath, 'ux-dir-file.js'),
+              'testModule-ux/rc/ux-dir/ux-dir-file.js', done);
+          });
         });
         
         it("pulls a file from rt runtime profile", function (done) {
           verifyFileGeneration(md, "module://testModule/rc/rt-only.js",
-            'module.exports = "i am rt only";', done);
+            'testModule-rt/rc/rt-only.js', done);
+        });
+
+        it("pulls a directory from rt runtime profile", function (done) {
+          md.getFilePath("module://testModule/rc/rt-dir", function (err, filePath) {
+            expect(err).toBeFalsy();
+            verifyFileContents(path.join(filePath, 'rt-dir-file.js'),
+              'testModule-rt/rc/rt-dir/rt-dir-file.js', done);
+          });
         });
         
+        it('merges duplicate directories together', function (done) {
+          md.getFilePath("module://testModule/rc", function (err, filePath) {
+            expect(err).toBeFalsy();
+            verifyFileContents(path.join(filePath, 'rt-dir', 'rt-dir-file.js'),
+              'testModule-rt/rc/rt-dir/rt-dir-file.js', () => {
+                verifyFileContents(path.join(filePath, 'ux-dir', 'ux-dir-file.js'),
+                  'testModule-ux/rc/ux-dir/ux-dir-file.js', () => {
+                    verifyFileContents(path.join(filePath, 'foo.js'),
+                      'testModule-ux/rc/foo.js', done);
+                  });
+              });
+          });
+        });
+
         it("pulls a file from a module with no runtime profile", function (done) {
           verifyFileGeneration(md, "module://testModule/rc/no-profile.js",
-            'module.exports = "i have no profile";', done);
+            'testModule/rc/no-profile.js', done);
         });
 
         it("pulls a /module/ URI from a module in NIAGARA_HOME", function (done) {
           verifyFileGeneration(md, "/module/testModule/rc/boo.js",
-            'module.exports = "i am a boo";', done);
+            'testModule-ux/rc/boo.js', done);
         });
 
         it("caches the file path so only pulled from zip once", function (done) {
@@ -225,9 +237,9 @@ describe("niagara-moduledev", function () {
             niagaraHome: niagaraHome
           }, function (err, md) {
             verifyFileGeneration(md, "/module/testModule/rc/boo.js",
-              'module.exports = "i am a boo";', function () {
+              'testModule-ux/rc/boo.js', function () {
                 verifyFileGeneration(md, "/module/testModule/rc/boo.js",
-                  'module.exports = "i am a boo";', done);
+                  'testModule-ux/rc/boo.js', done);
               });
           });
         });
@@ -267,11 +279,21 @@ describe("niagara-moduledev", function () {
           expect(String(fs.readFileSync(paths["bajaScript-rt"] + '.js')))
             .toBe('module.exports = "i am bajaScript-rt";');
           expect(String(fs.readFileSync(paths.foo + '.js')))
-            .toBe('module.exports = "i am a foo";');
+            .toBe('module.exports = \'testModule-ux/rc/foo.js\';');
           done();
         });
       });
       
+      it("maps a directory", function (done) {
+        md.getRequireJsPaths({
+          "rc": "nmodule/testModule/rc"
+        }, function (err, paths) {
+          let rc = paths.rc;
+          expect(fs.statSync(rc).isDirectory()).toBe(true);
+          verifyFileContents(path.join(rc, 'foo.js'), 'testModule-ux/rc/foo.js', done);
+        });
+      });
+
       it("respects an array for fallback behavior", function (done) {
         md.getRequireJsPaths({
           "bajaScript-rt": [
@@ -321,4 +343,26 @@ describe("niagara-moduledev", function () {
       });
     });
   });
+
+  function verifyFileContents(filePath, expectedExports, callback) {
+    fs.readFile(filePath, function (err, data) {
+      expect(err).toBeFalsy();
+      expect(String(data)).toBe("module.exports = '" + expectedExports + "';");
+      callback(err, data);
+    });
+  }
+
+  function verifyFileGeneration(md, filePath, expectedExports, done) {
+    md.getFilePath(filePath, function (err, filePath) {
+      expect(err).toBeFalsy();
+      verifyFileContents(filePath, expectedExports, done);
+    });
+  }
+
+  function verifyError(md, filePath, done) {
+    md.getFilePath(filePath, function (err) {
+      expect(err).toEqual(jasmine.any(Error));
+      done();
+    });
+  }
 });

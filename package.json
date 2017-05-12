@@ -19,10 +19,12 @@
   },
   "dependencies": {
     "adm-zip": "^0.4.7",
+    "fs-extra": "^3.0.1",
     "properties": "^1.2.1",
     "temp": "^0.8.3"
   },
   "devDependencies": {
+    "bluebird": "^3.5.0",
     "grunt": "^1.0.1",
     "grunt-contrib-jshint": "^1.1.0",
     "grunt-contrib-watch": "^1.0.0",
