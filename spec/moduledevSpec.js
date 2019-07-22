@@ -1,3 +1,6 @@
+/* eslint-env node, jasmine */
+/* eslint-disable camelcase */
+
 'use strict';
 
 const moduledev = require('../lib/moduledev'),
@@ -8,7 +11,7 @@ const moduledev = require('../lib/moduledev'),
 
 
 function matchPath(md, filePath, expected, cb) {
-  md.getFilePath(filePath, function (err, result) {
+  md.getFilePath(filePath, function (ignore, result) {
     if (typeof expected === 'string') {
       expected = expected.replace(/\//g, path.sep);
     }
@@ -57,6 +60,7 @@ describe("niagara-moduledev", function () {
   describe(".fromRawString()", function () {
     it("reads and parses a raw properties string", function (done) {
       moduledev.fromRawString(testPropsString, function (err, md) {
+        expect(err).toBe(null);
         matchPath(md, "/module/bajaScript/rc/bajaScript-rt.js",
           testProps.bajaScript + "/bajaScript-rt/src/rc/bajaScript-rt.js", done);
       });
@@ -64,6 +68,7 @@ describe("niagara-moduledev", function () {
 
     it("passes a ModuleDev instance to callback", function (done) {
       moduledev.fromRawString(testPropsString, function (err, md) {
+        expect(err).toBe(null);
         expect(md).toEqual(jasmine.any(ModuleDev));
         done();
       });
@@ -88,6 +93,7 @@ describe("niagara-moduledev", function () {
     it("reads and parses a properties file", function (done) {
       fs.writeFileSync(testFileName, testPropsString);
       moduledev.fromFile(testFileName, function (err, md) {
+        expect(err).toBe(null);
         verifyContents(md, function () {
           fs.unlinkSync(testFileName);
           done();
@@ -108,6 +114,7 @@ describe("niagara-moduledev", function () {
       fs.writeFileSync(filePath, testPropsString);
       process.env.niagara_home = ".";
       moduledev.fromFile(function (err, md) {
+        expect(err).toBe(null);
         verifyContents(md, function () {
           fs.unlinkSync(filePath);
           done();
@@ -118,6 +125,7 @@ describe("niagara-moduledev", function () {
     it("passes a ModuleDev instance to callback", function (done) {
       fs.writeFileSync(testFileName, testPropsString);
       moduledev.fromFile(testFileName, function (err, md) {
+        expect(err).toBe(null);
         expect(md).toEqual(jasmine.any(ModuleDev));
         fs.unlinkSync(testFileName);
         done();
@@ -126,6 +134,7 @@ describe("niagara-moduledev", function () {
 
     it("passes a blank ModuleDev instance to callback if file not found", function (done) {
       moduledev.fromFile("nonexistent.properties", function (err, md) {
+        expect(err).toBe(null);
         expect(md).toEqual(jasmine.any(ModuleDev));
         matchPath(md, "/module/bajaScript/rc", undefined, done);
       });
@@ -139,6 +148,7 @@ describe("niagara-moduledev", function () {
 
         beforeEach(function (done) {
           moduledev.fromRawString(testPropsString, function (err, m) {
+            expect(err).toBe(null);
             md = m;
             done();
           });
@@ -147,6 +157,11 @@ describe("niagara-moduledev", function () {
         it("maps a module://moduleName ORD to a -ux module dir", function (done) {
           matchPath(md, "module://bajaScript/rc/bajaScript-ux.js",
             testProps.bajaScript + "/bajaScript-ux/src/rc/bajaScript-ux.js", done);
+        });
+
+        it("looks in the build directory first", function (done) {
+          matchPath(md, "module://bajaScript/rc/transpiled.js",
+            testProps.bajaScript + "/bajaScript-ux/build/src/rc/transpiled.js", done);
         });
 
         it("maps a module://moduleNameTest ORD to a file in /srcTest", function (done) {
@@ -171,6 +186,7 @@ describe("niagara-moduledev", function () {
           moduledev.fromRawString(testPropsString, {
             niagaraHome: niagaraHome
           }, function (err, m) {
+            expect(err).toBe(null);
             md = m;
             done();
           });
@@ -236,6 +252,7 @@ describe("niagara-moduledev", function () {
           moduledev.fromRawString(testPropsString, {
             niagaraHome: niagaraHome
           }, function (err, md) {
+            expect(err).toBe(null);
             verifyFileGeneration(md, "/module/testModule/rc/boo.js",
               'testModule-ux/rc/boo.js', function () {
                 verifyFileGeneration(md, "/module/testModule/rc/boo.js",
@@ -266,6 +283,7 @@ describe("niagara-moduledev", function () {
         moduledev.fromRawString(testPropsString, {
           niagaraHome: niagaraHome
         }, function (err, m) {
+          expect(err).toBe(null);
           md = m;
           done();
         });
@@ -276,6 +294,7 @@ describe("niagara-moduledev", function () {
           "bajaScript-rt": "nmodule/bajaScript/rc/bajaScript-rt",
           "foo": "nmodule/testModule/rc/foo"
         }, function (err, paths) {
+          expect(err).toBe(null);
           expect(String(fs.readFileSync(paths["bajaScript-rt"] + '.js')))
             .toBe('module.exports = "i am bajaScript-rt";');
           expect(String(fs.readFileSync(paths.foo + '.js')))
@@ -288,6 +307,7 @@ describe("niagara-moduledev", function () {
         md.getRequireJsPaths({
           "rc": "nmodule/testModule/rc"
         }, function (err, paths) {
+          expect(err).toBe(null);
           let rc = paths.rc;
           expect(fs.statSync(rc).isDirectory()).toBe(true);
           verifyFileContents(path.join(rc, 'foo.js'), 'testModule-ux/rc/foo.js', done);
@@ -301,6 +321,7 @@ describe("niagara-moduledev", function () {
             "nmodule/bajaScript/rc/bajaScript-rt"
           ]
         }, function (err, paths) {
+          expect(err).toBe(null);
           expect(String(fs.readFileSync(paths["bajaScript-rt"] + '.js')))
             .toBe('module.exports = "i am bajaScript-rt";');
           done();
