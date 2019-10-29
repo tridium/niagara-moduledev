@@ -18,7 +18,7 @@
     "test": "jasmine-node spec"
   },
   "dependencies": {
-    "adm-zip": "0.4.7",
+    "adm-zip": "0.4.13",
     "fs-extra": "^3.0.1",
     "properties": "^1.2.1",
     "temp": "^0.8.3"
