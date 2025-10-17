@@ -29,30 +29,41 @@ describe("niagara-moduledev", function () {
           mobile: 'spec/niagaraDevHome/mobile'
         },
         testPropsString = properties.stringify(testProps);
+
+  let old_niagara_home;
+  let old_niagara_config_home;
   
   beforeEach(function () {
-    process.env.niagara_home = ".";
+    old_niagara_home = process.env.niagara_home;
+    old_niagara_config_home = process.env.niagara_config_home;
+    process.env.niagara_config_home = "spec/niagaraConfigHome";
+  });
+
+  afterEach(function () {
+    process.env.niagara_home = old_niagara_home;
+    process.env.niagara_config_home = old_niagara_config_home;
   });
       
   describe(".getDefaultFilePath()", function () {
-    it("returns $niagara_home/etc/moduledev.properties", function () {
-      const niagara_home = "/opt/niagara/whatever/",
-            filename = niagara_home + "etc/moduledev.properties";
-      process.env.niagara_home = niagara_home;
+    it("returns niagara_config_home/etc/moduledev.properties", function () {
+      const niagara_config_home = "/opt/niagara/whatever/",
+            filename = niagara_config_home + "etc/moduledev.properties";
+      process.env.niagara_config_home = niagara_config_home;
       expect(moduledev.getDefaultFilePath())
         .toBe(filename.replace(/\//g, path.sep));
     });
-    
-    it("uses passed niagaraHome if given", function () {
-      const niagara_home = "/opt/niagara/whatever/",
-            filename = niagara_home + "etc/moduledev.properties";
-      process.env.niagara_home = "asdf";
-      expect(moduledev.getDefaultFilePath({ niagaraHome: niagara_home }))
+
+    it("uses passed niagaraConfigHome if given", function () {
+      const niagara_config_home = "/opt/niagara/whatever/",
+            filename = niagara_config_home + "etc/moduledev.properties";
+      process.env.niagara_config_home = "asdf";
+      expect(moduledev.getDefaultFilePath({ niagaraConfigHome: niagara_config_home }))
         .toBe(filename.replace(/\//g, path.sep));
     });
-    
-    it("returns null if niagara_home is not defined", function () {
+
+    it("returns null if niagara_home and niagara_config_home are not defined", function () {
       delete process.env.niagara_home;
+      delete process.env.niagara_config_home;
       expect(moduledev.getDefaultFilePath()).toBe(null);
     });
   });
@@ -100,19 +111,34 @@ describe("niagara-moduledev", function () {
         });
       });
     });
-    
-    it("calls back error if niagara_home not present or given", function (done) {
+
+    it("calls back error if niagara_home and niagara_config_home not present or given", function (done) {
       delete process.env.niagara_home;
+      delete process.env.niagara_config_home;
       moduledev.fromFile(testFileName, function (err) {
         expect(err).toEqual(jasmine.any(Error));
         done();
       });
     });
-    
-    it("looks in niagara_home/etc/moduledev.properties by default", function (done) {
+
+    it("looks in niagara_config_home/etc/moduledev.properties by default", function (done) {
       const filePath = path.join(".", "etc", "moduledev.properties");
       fs.writeFileSync(filePath, testPropsString);
-      process.env.niagara_home = ".";
+      process.env.niagara_config_home = ".";
+      process.env.niagara_home = 'donotuse';
+      moduledev.fromFile(function (err, md) {
+        verifyContents(md, function () {
+          fs.unlinkSync(filePath);
+          done();
+        });
+      });
+    });
+
+    it("looks in niagara_home if niagara_config_home not present", function (done) {
+      const filePath = path.join(".", "etc", "moduledev.properties");
+      fs.writeFileSync(filePath, testPropsString);
+      delete process.env.niagara_config_home;
+      process.env.niagara_home = '.';
       moduledev.fromFile(function (err, md) {
         expect(err).toBe(null);
         verifyContents(md, function () {
@@ -179,20 +205,20 @@ describe("niagara-moduledev", function () {
       });
 
       describe("for modules not in moduledev.properties", function () {
-        let niagaraHome = 'spec/niagaraHome',
+        let niagaraConfigHome = 'spec/niagaraConfigHome',
             md;
 
         beforeEach(function (done) {
           moduledev.fromRawString(testPropsString, {
-            niagaraHome: niagaraHome
+            niagaraConfigHome: niagaraConfigHome
           }, function (err, m) {
             expect(err).toBe(null);
             md = m;
             done();
           });
         });
-        
-        it("pulls a module:// file from a module in NIAGARA_HOME", function (done) {
+
+        it("pulls a module:// file from a module in NIAGARA_CONFIG_HOME", function (done) {
           verifyFileGeneration(md, "module://testModule/rc/foo.js",
             'testModule-ux/rc/foo.js', done);
         });
@@ -242,7 +268,7 @@ describe("niagara-moduledev", function () {
             'testModule/rc/no-profile.js', done);
         });
 
-        it("pulls a /module/ URI from a module in NIAGARA_HOME", function (done) {
+        it("pulls a /module/ URI from a module in NIAGARA_CONFIG_HOME", function (done) {
           verifyFileGeneration(md, "/module/testModule/rc/boo.js",
             'testModule-ux/rc/boo.js', done);
         });
@@ -250,7 +276,7 @@ describe("niagara-moduledev", function () {
         it("caches the file path so only pulled from zip once", function (done) {
           //use same instance for both...
           moduledev.fromRawString(testPropsString, {
-            niagaraHome: niagaraHome
+            niagaraConfigHome: niagaraConfigHome
           }, function (err, md) {
             expect(err).toBe(null);
             verifyFileGeneration(md, "/module/testModule/rc/boo.js",
@@ -276,12 +302,12 @@ describe("niagara-moduledev", function () {
     });
     
     describe(".getRequireJsPaths()", function () {
-      let niagaraHome = 'spec/niagaraHome',
+      let niagaraConfigHome = 'spec/niagaraConfigHome',
           md;
 
       beforeEach(function (done) {
         moduledev.fromRawString(testPropsString, {
-          niagaraHome: niagaraHome
+          niagaraConfigHome: niagaraConfigHome
         }, function (err, m) {
           expect(err).toBe(null);
           md = m;
