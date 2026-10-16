@@ -1,4 +1,3 @@
-/* eslint-env node, jasmine */
 /* eslint-disable camelcase */
 
 'use strict';
