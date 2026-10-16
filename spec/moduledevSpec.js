@@ -31,7 +31,7 @@ describe("niagara-moduledev", function () {
 
   let old_niagara_home;
   let old_niagara_config_home;
-  
+
   beforeEach(function () {
     old_niagara_home = process.env.niagara_home;
     old_niagara_config_home = process.env.niagara_config_home;
@@ -42,6 +42,13 @@ describe("niagara-moduledev", function () {
     process.env.niagara_home = old_niagara_home;
     process.env.niagara_config_home = old_niagara_config_home;
   });
+
+  afterEach(function () {
+    process.env.niagara_home = old_niagara_home;
+    process.env.niagara_config_home = old_niagara_config_home;
+  });
+
+
       
   describe(".getDefaultFilePath()", function () {
     it("returns niagara_config_home/etc/moduledev.properties", function () {
