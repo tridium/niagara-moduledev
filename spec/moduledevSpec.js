@@ -44,6 +44,11 @@ describe("niagara-moduledev", function () {
     process.env.niagara_config_home = old_niagara_config_home;
   });
 
+  afterEach(function () {
+    process.env.niagara_home = old_niagara_home;
+    process.env.niagara_config_home = old_niagara_config_home;
+  });
+
 
       
   describe(".getDefaultFilePath()", function () {
@@ -54,7 +59,7 @@ describe("niagara-moduledev", function () {
       expect(moduledev.getDefaultFilePath())
         .toBe(filename.replace(/\//g, path.sep));
     });
-    
+
     it("uses passed niagaraConfigHome if given", function () {
       const niagara_config_home = "/opt/niagara/whatever/",
             filename = niagara_config_home + "etc/moduledev.properties";
@@ -62,7 +67,7 @@ describe("niagara-moduledev", function () {
       expect(moduledev.getDefaultFilePath({ niagaraConfigHome: niagara_config_home }))
         .toBe(filename.replace(/\//g, path.sep));
     });
-    
+
     it("returns null if niagara_home and niagara_config_home are not defined", function () {
       delete process.env.niagara_home;
       delete process.env.niagara_config_home;
@@ -113,7 +118,7 @@ describe("niagara-moduledev", function () {
         });
       });
     });
-    
+
     it("calls back error if niagara_home and niagara_config_home not present or given", function (done) {
       delete process.env.niagara_home;
       delete process.env.niagara_config_home;
@@ -122,7 +127,7 @@ describe("niagara-moduledev", function () {
         done();
       });
     });
-    
+
     it("looks in niagara_config_home/etc/moduledev.properties by default", function (done) {
       const filePath = path.join(".", "etc", "moduledev.properties");
       fs.writeFileSync(filePath, testPropsString);
@@ -219,7 +224,7 @@ describe("niagara-moduledev", function () {
             done();
           });
         });
-        
+
         it("pulls a module:// file from a module in NIAGARA_CONFIG_HOME", function (done) {
           verifyFileGeneration(md, "module://testModule/rc/foo.js",
             'testModule-ux/rc/foo.js', done);
