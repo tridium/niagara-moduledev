@@ -393,9 +393,11 @@ describe("niagara-moduledev", function () {
 
   function verifyFileContents(filePath, expectedExports, callback) {
     fs.readFile(filePath, function (err, data) {
-      expect(err).toBeFalsy();
+      if (err) {
+        return callback(err);
+      }
       expect(String(data)).toBe("module.exports = '" + expectedExports + "';");
-      callback(err, data);
+      return callback(undefined, data);
     });
   }
 
